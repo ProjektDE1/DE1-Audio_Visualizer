@@ -4,10 +4,10 @@ Repository for project in class DE1
 
 # Team Members:
 
-1. Matouš Huczala
-2. Jerguš Gecík
-3. Samuel Pažítka
-4. Pavel Uher
+- Matouš Huczala
+- Jerguš Gecík
+- Samuel Pažítka
+- Pavel Uher
 
 # Overview
 
