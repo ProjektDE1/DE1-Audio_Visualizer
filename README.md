@@ -4,7 +4,7 @@ Repository for project in class DE1
 
 # Team Members:
 
-- Matouš Huczala
+- Matouš Huczala -> discord: matyskovo 
 - Jerguš Gecík
 - Samuel Pažítka
 - Pavel Uher
