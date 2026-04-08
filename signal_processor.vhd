@@ -24,7 +24,7 @@ end signal_processor;
 architecture Behavioral of signal_processor is
 
     -- -------------------------------------------------------------------------
-    -- LUT: amplitude (0-64) -> spl hodnota (0-99)
+    -- LUT 0-64 pre spl 0-99
     -- -------------------------------------------------------------------------
     type lut_t is array(0 to 64) of integer range 0 to 99;
     constant SPL_LUT : lut_t := (
@@ -38,7 +38,7 @@ architecture Behavioral of signal_processor is
     );
 
     -- -------------------------------------------------------------------------
-    -- 7-seg kodovanie: integer kod -> 7 segmentov  
+    -- 7 segmentovka  
     -- -------------------------------------------------------------------------
     function encode_seg(d : integer range 0 to 15) return STD_LOGIC_VECTOR is
     begin
@@ -71,7 +71,7 @@ architecture Behavioral of signal_processor is
 begin
 
     -- =========================================================================
-    -- Proces 1: LUT konverzia pri data_valid
+    -- LUT konverzia
     -- =========================================================================
     process(clk) is
         variable count_v : integer range 0 to 8191 := 0;
@@ -106,8 +106,8 @@ begin
                 digits(6) <= 15;
                 digits(5) <= 15;
                 digits(4) <= 15;
-                digits(3) <= 10;            -- 'd'
-                digits(2) <= 11;            -- 'b'
+                digits(3) <= 10;            -- d
+                digits(2) <= 11;            -- b
                 digits(1) <= spl_v / 10;    -- desiatky
                 digits(0) <= spl_v mod 10;  -- jednotky
 
@@ -124,7 +124,7 @@ begin
     end process;
 
     -- =========================================================================
-    -- Proces 2: multiplexovanie 7-segmentoveho displeja
+    -- Multiplex 7 segment displej
     -- =========================================================================
     process(clk) is
     begin
@@ -147,8 +147,6 @@ begin
         end if;
     end process;
 
-    -- =========================================================================
-    -- Kombinacna logika: anody a segmenty 
     -- =========================================================================
     process(digit_sel, digits) is
     begin
