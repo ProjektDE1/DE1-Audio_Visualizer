@@ -1,21 +1,20 @@
-
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
 entity signal_processor is
     generic (
-        G_BITS      : positive := 13;      
-        G_REFRESH   : positive := 100_000  
+        G_BITS    : positive := 8;
+        G_REFRESH : positive := 100_000
     );
     port (
         clk        : in  STD_LOGIC;
         rst        : in  STD_LOGIC;
         data       : in  STD_LOGIC_VECTOR(G_BITS-1 downto 0);
         data_valid : in  STD_LOGIC;
-        spl_val    : out STD_LOGIC_VECTOR(6 downto 0);  
-        led_data   : out STD_LOGIC_VECTOR(15 downto 0); 
-        seg        : out STD_LOGIC_VECTOR(6 downto 0);   
+        spl_val    : out STD_LOGIC_VECTOR(6 downto 0);
+        led_data   : out STD_LOGIC_VECTOR(15 downto 0);
+        seg        : out STD_LOGIC_VECTOR(6 downto 0);
         dp         : out STD_LOGIC;
         an         : out STD_LOGIC_VECTOR(7 downto 0)
     );
@@ -24,7 +23,9 @@ end signal_processor;
 architecture Behavioral of signal_processor is
 
     -- -------------------------------------------------------------------------
-    -- LUT 0-64 pre spl 0-99
+    -- LUT: amp (0-64) -> spl (0-99)
+    -- amp = |count - 64|
+    -- akumulator pocita max 128 vzoriek, stred PDM = 64 bez ohladu na G_BITS
     -- -------------------------------------------------------------------------
     type lut_t is array(0 to 64) of integer range 0 to 99;
     constant SPL_LUT : lut_t := (
@@ -38,7 +39,7 @@ architecture Behavioral of signal_processor is
     );
 
     -- -------------------------------------------------------------------------
-    -- 7 segmentovka  
+    -- 7-seg kodovanie (active-low, gfedcba)
     -- -------------------------------------------------------------------------
     function encode_seg(d : integer range 0 to 15) return STD_LOGIC_VECTOR is
     begin
@@ -53,14 +54,14 @@ architecture Behavioral of signal_processor is
             when 7  => return "1111000"; -- 7
             when 8  => return "0000000"; -- 8
             when 9  => return "0010000"; -- 9
-            when 10 => return "0100001"; -- 'd' 
-            when 11 => return "0000011"; -- 'b' 
-            when others => return "1111111"; 
+            when 10 => return "0100001"; -- 'd'
+            when 11 => return "0000011"; -- 'b'
+            when others => return "1111111"; -- blank
         end case;
     end function;
 
-    signal sig_spl   : integer range 0 to 99 := 0;
-    signal sig_leds  : STD_LOGIC_VECTOR(15 downto 0) := (others => '0');
+    signal sig_spl  : integer range 0 to 99 := 0;
+    signal sig_leds : STD_LOGIC_VECTOR(15 downto 0) := (others => '0');
 
     signal refresh_cnt : integer range 0 to G_REFRESH-1 := 0;
     signal digit_sel   : integer range 0 to 7 := 0;
@@ -71,12 +72,13 @@ architecture Behavioral of signal_processor is
 begin
 
     -- =========================================================================
-    -- LUT konverzia
+    -- Proces 1: LUT konverzia pri data_valid
     -- =========================================================================
     process(clk) is
-        variable count_v : integer range 0 to 8191 := 0;
-        variable amp_v   : integer range 0 to 64   := 0;
-        variable spl_v   : integer range 0 to 99   := 0;
+        -- count_v: rozsah podla G_BITS (8 bit = 0-255, ale max realne 128)
+        variable count_v : integer range 0 to 255 := 0;
+        variable amp_v   : integer range 0 to 64  := 0;
+        variable spl_v   : integer range 0 to 99  := 0;
     begin
         if rising_edge(clk) then
             if rst = '1' then
@@ -86,11 +88,13 @@ begin
 
             elsif data_valid = '1' then
                 count_v := to_integer(unsigned(data));
+
+                -- orez na 128 (akumulator pocita max G_MAX=128 vzoriek)
                 if count_v > 128 then
                     count_v := 128;
                 end if;
 
-               
+                -- amplitude = vzdialenost od stredu PDM signalu (64)
                 if count_v >= 64 then
                     amp_v := count_v - 64;
                 else
@@ -101,17 +105,17 @@ begin
                 spl_v   := SPL_LUT(amp_v);
                 sig_spl <= spl_v;
 
-
+                -- digits pre 7-seg:  "  db XX"
                 digits(7) <= 15;
                 digits(6) <= 15;
                 digits(5) <= 15;
                 digits(4) <= 15;
-                digits(3) <= 10;            -- d
-                digits(2) <= 11;            -- b
-                digits(1) <= spl_v / 10;    -- desiatky
-                digits(0) <= spl_v mod 10;  -- jednotky
+                digits(3) <= 10;           -- 'd'
+                digits(2) <= 11;           -- 'b'
+                digits(1) <= spl_v / 10;   -- desiatky
+                digits(0) <= spl_v mod 10; -- jednotky
 
-               
+                -- LED bargraf: kazda LED ~6 dB
                 for i in 0 to 15 loop
                     if spl_v > i * 6 then
                         sig_leds(i) <= '1';
@@ -124,7 +128,7 @@ begin
     end process;
 
     -- =========================================================================
-    -- Multiplex 7 segment displej
+    -- Proces 2: refresh counter pre multiplex displeja
     -- =========================================================================
     process(clk) is
     begin
@@ -148,6 +152,8 @@ begin
     end process;
 
     -- =========================================================================
+    -- Kombinacna logika: anody a segmenty (active-low)
+    -- =========================================================================
     process(digit_sel, digits) is
     begin
         an <= "11111111";
@@ -165,9 +171,7 @@ begin
         seg <= encode_seg(digits(digit_sel));
     end process;
 
-    dp <= '0'; 
-
-
+    dp       <= '1'; -- active-low: '1' = bodka vypnuta
     spl_val  <= std_logic_vector(to_unsigned(sig_spl, 7));
     led_data <= sig_leds;
 
