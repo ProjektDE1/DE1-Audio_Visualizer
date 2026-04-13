@@ -1,6 +1,5 @@
 
---vcd=result.vcd
-
+-- vcd=result.vcd
 -- prepis akumulatoru pro praci s klouzavym prumerem na posuvnem registru o delce 4096bit 
 
 library IEEE; 

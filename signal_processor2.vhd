@@ -1,5 +1,7 @@
-
--- rozlozeni funkci signal procesoru s LUT a LED driveru  
+-- SIGNAL_PROCESSOR2
+-- vycentruje data z akumulatoru kolem nuly a provede jejich absolutni hodnotu
+-- 1 za 125ms == SPL FAST se podiva do LUT a vyhodi ven hodnotu dat v dB
+-- data jsou pro Led driver k dispozici kdyz db_valid == 1
 
 library IEEE; 
 use IEEE.STD_LOGIC_1164.ALL;       
@@ -8,11 +10,10 @@ use work.db_pkg.ALL;
 
 entity signal_processor2 is
 
-    generic (G_N : positive := 2049);
+    generic (G_N : positive := 2048);
     port (
         clk             : in std_logic;
         rst             : in std_logic;
-        clk_en          : in std_logic; 
 
         data            : in std_logic_vector(12 downto 0); 
         data_valid      : in std_logic; 
@@ -25,7 +26,10 @@ end entity;
 architecture behavioral of signal_processor2 is
 
     -- SPL FAST podle normy 125ms
-    constant TIME_CONST : integer := 12_500_000 - 1;
+    constant TIME_CONST : integer := 12_500_000 -1;
+
+    -- for testing: 
+    --constant TIME_CONST : integer := 2000 - 1; 
     
     signal current_peak : unsigned (12 downto 0) := (others => '0');
     signal time_counter : integer range 0 to 12_500_000 := 0;
@@ -45,11 +49,13 @@ begin
             if rst = '1' then
                 time_counter <= 0; 
                 current_peak <= (others => '0' );
+                db_valid <= '0';
             else
 
                 -- vyrovnani kolem nuly a absolutni hodnota
-                if clk_en = '1' then
-
+                -- cekame na data_valid z akumulatoru 
+                if data_valid = '1' then
+                        
                     data_us := unsigned(data);
 
                     if data_us >= G_N then
@@ -57,23 +63,23 @@ begin
                     else
                         tmp := G_N - data_us;
                     end if;
-
+    
                     if tmp > current_peak then
                         current_peak <= tmp;
                     end if;
-                end if;
 
+                end if;
 
                 -- koukneme do LUT v momente kdy mame zmereny peak za 125ms
                 if time_counter = TIME_CONST then
                     time_counter <= 0; 
-                    db__for_out  <= to_unsigned(SPL_LUT(to_integer(current_peak)), 7);
+                    db_for_out   <= to_unsigned(SPL_LUT(to_integer(current_peak)), 7);
                     db_valid     <= '1';
                     current_peak <= (others => '0' );
                 else
                     time_counter <= time_counter + 1; 
+                    db_valid     <= '0';
                 end if;
-
             end if;
         end if;
     end process;

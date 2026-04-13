@@ -71,7 +71,7 @@ begin
         rst <= '1';
         wait for 100 ns;
         rst <= '0';
-        wait for TbPeriod * 10;70
+        wait for TbPeriod * 10;
 
         -----------------------------------------------------------------------
         -- TEST 1: Simulace TICHA (Střída 50% : 101010...)
