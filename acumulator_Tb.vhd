@@ -1,7 +1,7 @@
 -- Testbench automatically generated online
 -- at https://vhdl.lapinoo.net
--- Generation date : Mon, 06 Apr 2026 16:52:09 GMT
--- Request id : cfwk-fed377c2-69d3e4b977094
+-- Generation date : Sun, 12 Apr 2026 13:11:53 GMT
+-- Request id : cfwk-fed377c2-69db9a1981080
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -11,109 +11,113 @@ end tb_acumulator;
 
 architecture tb of tb_acumulator is
 
-    constant G_BITS : positive := 8;
-
     component acumulator
-        generic (G_BITS : positive := 8);
+        generic (
+            G_N : positive := 4096
+        );
         port (clk        : in std_logic;
               rst        : in std_logic;
-              clk_div_en : in std_logic;
+              clk_en     : in std_logic;
               data       : in std_logic;
-              en         : in std_logic;
               data_valid : out std_logic;
-              data_out   : out std_logic_vector (G_BITS-1 downto 0));
+              data_out   : out std_logic_vector (12 downto 0));
     end component;
 
     signal clk        : std_logic;
     signal rst        : std_logic;
-    signal clk_div_en : std_logic;
+    signal clk_en     : std_logic;
     signal data       : std_logic;
-    signal en         : std_logic;
     signal data_valid : std_logic;
-    signal data_out   : std_logic_vector (G_BITS-1 downto 0);
+    signal data_out   : std_logic_vector (12 downto 0);
 
-    constant TbPeriod : time := 10 ns; 
+    constant TbPeriod : time := 10 ns; -- ***EDIT*** Put right period here
     signal TbClock : std_logic := '0';
     signal TbSimEnded : std_logic := '0';
 
 begin
 
     dut : acumulator
-    generic map (G_BITS => G_BITS)
+    generic map (
+        G_N => 4096
+    )
     port map (clk        => clk,
               rst        => rst,
-              clk_div_en => clk_div_en,
+              clk_en     => clk_en,
               data       => data,
-              en         => en,
               data_valid => data_valid,
               data_out   => data_out);
 
+    -- Clock generation
     TbClock <= not TbClock after TbPeriod/2 when TbSimEnded /= '1' else '0';
+
+    -- ***EDIT*** Check that clk is really your main clock signal
     clk <= TbClock;
 
     stimuli : process
+        -- Pomocná procedura pro poslání jednoho PDM bitu
+        procedure send_pdm_bit(bit_val : std_logic) is
+        begin
+            data <= bit_val;
+            clk_en <= '1';
+            wait for TbPeriod;
+            clk_en <= '0';
+            wait for TbPeriod * 32; -- Simulace PDM hodinového taktu (cca 3.03 MHz)
+        end procedure;
+
     begin
-        clk_div_en <= '0';
+        -- Inicializace
+        clk_en <= '0';
         data <= '0';
-        en <= '0';
-
-        -- Reset sekvence
         rst <= '1';
-        wait for 50 ns;
+        wait for 100 ns;
         rst <= '0';
-        
-        -- Počkáme na bezpečné ustálení a sesynchronizujeme se se sestupnou hranou
-        wait for 2 * TbPeriod;
-        wait until falling_edge(clk);
+        wait for TbPeriod * 10;70
 
-        for i in 1 to 32 loop
-            clk_div_en <= '1';
-            
-            -- Střídání jedniček a nul
-            if (i mod 2 = 0) then
-                data <= '1';
-            else
-                data <= '0';
+        -----------------------------------------------------------------------
+        -- TEST 1: Simulace TICHA (Střída 50% : 101010...)
+        -- Očekáváme, že data_out se postupně ustálí na hodnotě 2048
+        -----------------------------------------------------------------------
+        report "Start simulace: TICHO (50% density)";
+        for i in 1 to 4096 loop
+            if (i mod 2 = 0) then send_pdm_bit('1');
+            else send_pdm_bit('0');
             end if;
-            
-            wait for 1 * TbPeriod;
-            clk_div_en <= '0';
-            wait for 3 * TbPeriod; 
         end loop;
-
-        -- Vyčtení dat a reset akumulátoru (konec vzorkovacího okna)
-        clk_div_en <= '1';
-        en <= '1';
-        wait for 1 * TbPeriod;
-        en <= '0';
-        clk_div_en <= '0';
         
-        wait for 5 * TbPeriod; -- Pauza mezi snímky
+        wait for 1 us;
 
-        ------------------------------------------------------------------
-        -- TEST 2: Maximální amplituda / Clipping (PDM signál 111111...)
-        ------------------------------------------------------------------
-        -- Očekáváme, že čítač započítá všechny přicházející vzorky
-        for i in 1 to 16 loop
-            clk_div_en <= '1';
-            data <= '1'; -- Stále log. 1
-            wait for 1 * TbPeriod;
-            clk_div_en <= '0';
-            wait for 3 * TbPeriod;
+        -----------------------------------------------------------------------
+        -- TEST 2: Simulace MAXIMÁLNÍHO TLAKU (Samé 1)
+        -- Očekáváme, že data_out poroste až k hodnotě 4096
+        -----------------------------------------------------------------------
+        report "Start simulace: MAX (100% density)";
+        for i in 1 to 4096 loop
+            send_pdm_bit('1');
         end loop;
 
-        -- Vyčtení dat a reset akumulátoru
-        clk_div_en <= '1';
-        en <= '1';
-        wait for 1 * TbPeriod;
-        en <= '0';
-        clk_div_en <= '0';
+        wait for 1 us;
 
-        wait for 10 * TbPeriod;
+        -----------------------------------------------------------------------
+        -- TEST 3: Simulace MAXIMÁLNÍHO PODTLAKU (Samé 0)
+        -- Očekáváme, že data_out klesne až k hodnotě 0
+        -----------------------------------------------------------------------
+        report "Start simulace: MIN (0% density)";
+        for i in 1 to 4096 loop
+            send_pdm_bit('0');
+        end loop;
 
-        -- Zastavení hodin a čisté ukončení simulace
+        wait for 10 us;
+
+        -- Ukončení simulace
+        report "Simulace dokoncena v poradku.";
         TbSimEnded <= '1';
         wait;
     end process;
-
 end tb;
+
+-- Configuration block below is required by some simulators. Usually no need to edit.
+
+configuration cfg_tb_acumulator of tb_acumulator is
+    for tb
+    end for;
+end cfg_tb_acumulator;
