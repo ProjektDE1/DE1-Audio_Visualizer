@@ -1,7 +1,5 @@
 # DE1-Audio-Visualizer
 
-Repository for project in class DE1
-
 # Team Members:
 
 - Matouš Huczala -> discord: matyskovo 
