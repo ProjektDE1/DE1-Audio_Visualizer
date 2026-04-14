@@ -11,7 +11,8 @@ Repository for project in class DE1
 
 # Overview
 
-Our project is an Audio Visualizer which will be realised on a Nexys A7 50T FPGA board. It will sample real time audio and display the volume on a series of 16x LEDs and a 7 segment display. To realise this we are using the build in MEMS microphone and LEDs.
+Our project is an Audio Visualizer realised on a Nexys A7-50T FPGA board. It samples real-time audio using the onboard ADMP421 MEMS microphone and processes the PDM signal to measure the current sound level. The result is displayed as a dB value on the 7-segment display and as a visual bargraph across 16 LEDs, where each LED represents approximately 6 dB of dynamic range.
+The design is implemented in VHDL and consists of five components: a clock divider, an accumulator enable counter, a PDM microphone interface, a sample accumulator, and a signal processor with a logarithmic LUT for dB conversion.
 
 ## Inputs
 
