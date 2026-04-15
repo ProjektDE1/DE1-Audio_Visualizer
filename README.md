@@ -3,7 +3,7 @@
 # Team Members:
 
 - Matouš Huczala -> discord: matyskovo 
-- Jerguš Gecík
+- Jerguš Gecík -> discord: joxwy
 - Samuel Pažítka
 - Pavel Uher
 
