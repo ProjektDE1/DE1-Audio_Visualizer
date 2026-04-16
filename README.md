@@ -10,7 +10,7 @@
 # Overview
 
 Our project is an Audio Visualizer realised on a Nexys A7-50T FPGA board. It samples real-time audio using the onboard ADMP421 MEMS microphone and processes the PDM signal to measure the current sound level. The result is displayed as a dB value on the 7-segment display and as a visual bargraph across 16 LEDs, where each LED represents approximately 6 dB of dynamic range.
-The design is implemented in VHDL and consists of five components: a clock divider, an accumulator enable counter, a PDM microphone interface, a sample accumulator, and a signal processor with a logarithmic LUT for dB conversion.
+The design is implemented in VHDL and consists of five components: [a clock divider](clock_div.vhd), [an accumulator enable counter](acu_enable.vhd), [a PDM microphone interface](microphone.vhd), [a sample accumulator](acumulator.vhd), and a [signal processor](signal_processor1.vhd) with a logarithmic LUT for dB conversion.
 
 ## Top Diagram
 
