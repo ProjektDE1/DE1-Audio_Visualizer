@@ -14,13 +14,11 @@ entity audio_meter_top is
         m_lr_sel    : out STD_LOGIC;
 
         -- docasny vystup - pouze pro testovani 
-        db_out      : out STD_LOGIC_VECTOR(6 downto 0);
-        db_valid    : out STD_LOGIC
+        -- db_out      : out STD_LOGIC_VECTOR(6 downto 0);
+        -- db_valid    : out STD_LOGIC
 
-        --seg         : out STD_LOGIC_VECTOR(6 downto 0);
-        --an          : out STD_LOGIC_VECTOR(7 downto 0);
-        --dp          : out STD_LOGIC;
-        --led         : out STD_LOGIC_VECTOR(15 downto 0)
+        -- vystup na led 
+        led_out     : out STD_LOGIC_VECTOR(15 downto 0); 
     );
 end audio_meter_top;
 
@@ -68,7 +66,18 @@ architecture Behavioral of audio_meter_top is
         );
     end component;
 
--- space for led_driver component
+
+    -- space for led_driver component
+    component led_driver is
+        port (
+
+            clk            : in std_logic;
+            rst            : in std_logic;
+            data_in        : in std_logic_vector(6 downto 0); 
+            data_valid     : in std_logic; 
+            led_out        : out std_logic_vector(15 downto 0)   
+        );
+    end component;
 
 
     -- Signals
@@ -83,6 +92,9 @@ architecture Behavioral of audio_meter_top is
         -- signal processor 
         signal wire_db_valid    : STD_LOGIC;
         signal wire_db_out      : STD_LOGIC_VECTOR (6 downto 0);
+
+        -- led driver
+        signal wire_led_out     : STD_LOGIC_VECTOR (15 downto 0); 
 
 begin
 
@@ -126,9 +138,20 @@ begin
             db_valid    => wire_db_valid,
             db_out      => wire_db_out
         );
+
+    inst_led_driver: led_driver
+        
+        port map (
+            clk         => clk,
+            rst         => rst,
+            data_in     => wire_db_out, 
+            data_valid  => wire_db_valid,
+            led_out     => wire_led_out
+        );
     
     
-    db_out      <= wire_db_out;
-    db_valid    <= wire_db_valid;
+    led_out        <= wire_led_out; 
+    -- db_out      <= wire_db_out;
+    -- db_valid    <= wire_db_valid;
 
 end Behavioral;

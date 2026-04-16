@@ -57,21 +57,24 @@ begin
         wait for 20 ns; -- Wait a bit after reset
 
         -- male
-        data_in    <= "0000001";
+        data_in    <= "1000010";
+        --data_in    <= "0000001";
         data_valid <= '1';
         wait for TbPeriod;     -- Hold for one clock cycle
         data_valid <= '0';     -- De-assert valid
         wait for 4 * TbPeriod; -- Gap between data
 
         -- stredne cca
-        data_in    <= "0101010";
+        data_in      <= "1011010";
+        --data_in    <= "0101010";
         data_valid <= '1';
         wait for TbPeriod;
         data_valid <= '0';
         wait for 4 * TbPeriod;
 
         -- MAX
-        data_in    <= "1111111";
+        data_in      <= "1111000";
+        --data_in    <= "1111111";
         data_valid <= '1';
         wait for TbPeriod;
         data_valid <= '0';
