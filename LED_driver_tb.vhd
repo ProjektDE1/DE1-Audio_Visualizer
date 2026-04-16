@@ -1,7 +1,7 @@
 -- Testbench automatically generated online
 -- at https://vhdl.lapinoo.net
--- Generation date : Wed, 15 Apr 2026 20:36:15 GMT
--- Request id : cfwk-fed377c2-69dff6bf7d1af
+-- Generation date : Thu, 16 Apr 2026 14:06:16 GMT
+-- Request id : cfwk-fed377c2-69e0ecd8a5df6
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -16,7 +16,10 @@ architecture tb of tb_led_driver is
               rst        : in std_logic;
               data_in    : in std_logic_vector (6 downto 0);
               data_valid : in std_logic;
-              led_out    : out std_logic_vector (15 downto 0));
+              led_out    : out std_logic_vector (15 downto 0);
+              seg        : out std_logic_vector (6 downto 0);
+              an         : out std_logic_vector (7 downto 0);
+              dp         : out std_logic);
     end component;
 
     signal clk        : std_logic;
@@ -24,6 +27,9 @@ architecture tb of tb_led_driver is
     signal data_in    : std_logic_vector (6 downto 0);
     signal data_valid : std_logic;
     signal led_out    : std_logic_vector (15 downto 0);
+    signal seg        : std_logic_vector (6 downto 0);
+    signal an         : std_logic_vector (7 downto 0);
+    signal dp         : std_logic;
 
     constant TbPeriod : time := 10 ns; -- ***EDIT*** Put right period here
     signal TbClock : std_logic := '0';
@@ -36,7 +42,10 @@ begin
               rst        => rst,
               data_in    => data_in,
               data_valid => data_valid,
-              led_out    => led_out);
+              led_out    => led_out,
+              seg        => seg,
+              an         => an,
+              dp         => dp);
 
     -- Clock generation
     TbClock <= not TbClock after TbPeriod/2 when TbSimEnded /= '1' else '0';
@@ -46,7 +55,7 @@ begin
 
     stimuli : process
     begin
-        -- Zaciatok
+        -- ***EDIT*** Adapt initialization as needed
         data_in <= (others => '0');
         data_valid <= '0';
 
