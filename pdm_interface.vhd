@@ -1,8 +1,7 @@
-
--- spojeni komponent Microphone a clock_divider
--- komunikace a cteni dat z mikrofonu + deleni hlavniho clocku 
---                              -> impulzy pro akumulator
---                              -> clk se stridou 50% pro mikrofon 
+-- connecting microphone and clock divider components
+-- communication and reading data from MEMS microphone
+-- division of the main clock signal
+-- 3.03MHz pulses for accumulator and 50% duty cycle clock for microphone
 
 library IEEE; 
 use IEEE.STD_LOGIC_1164.ALL;       
@@ -13,18 +12,18 @@ entity pdm_interface is
     generic (G_DIV : positive := 33);
 
     port (
-        -- vstupy komponenty 
+        -- component inputs
         clk         : in std_logic;
         rst         : in std_logic;
 
-        -- vystupy pro MEMS mikrofon
+        -- outputs for MEMS microphone
         m_clk       : out std_logic;
         m_lr_sel    : out std_logic; 
 
-        -- vstupy z MEMS mikrofonu 
+        -- inputs from MEMS microphone 
         m_data      : in std_logic; 
 
-        -- vystupy kompenenty
+        -- component outputs
         data        : out std_logic; 
         clk_en      : out std_logic
 
@@ -51,7 +50,7 @@ begin
             else
                 data_sync <= m_data; 
                 
-                -- generovani enable signalu pro akumulator f = 3.03 MHZ
+                -- generation of enabling signal for accumulator f = 3.03 MHz
                 if sig_cnt = G_DIV-1 then
                     sig_cnt <= 0;
                     clk_en <= '1';
@@ -60,7 +59,7 @@ begin
                     clk_en <= '0';
                 end if;
 
-                -- generovani signalu se stridou 50% pro mikrofon f = 3.03 MHz
+                -- generating a signal with a 50% duty cycle for a microphone f = 3.03 MHz
                 if sig_cnt < (G_DIV / 2) then
                     clk_tog <= '1'; 
                 else

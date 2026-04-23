@@ -82,6 +82,17 @@ begin
         send_data(3900);
         send_data(2048);
         send_data(100);
+        send_data(1500); 
+
+        send_data(700); 
+        send_data(5); 
+        send_data(0); 
+        send_data(2300); 
+        send_data(4000); 
+        send_data(2300); 
+        send_data(3000); 
+        send_data(0); 
+        send_data(0); 
 
         wait for 20 us;
 

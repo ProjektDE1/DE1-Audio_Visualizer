@@ -13,7 +13,7 @@ architecture tb of tb_acumulator is
 
     component acumulator
         generic (
-            G_N : positive := 4096
+            G_N : positive := 128
         );
         port (clk        : in std_logic;
               rst        : in std_logic;
@@ -38,7 +38,7 @@ begin
 
     dut : acumulator
     generic map (
-        G_N => 4096
+        G_N => 128
     )
     port map (clk        => clk,
               rst        => rst,
@@ -50,7 +50,6 @@ begin
     -- Clock generation
     TbClock <= not TbClock after TbPeriod/2 when TbSimEnded /= '1' else '0';
 
-    -- ***EDIT*** Check that clk is really your main clock signal
     clk <= TbClock;
 
     stimuli : process
@@ -73,12 +72,8 @@ begin
         rst <= '0';
         wait for TbPeriod * 10;
 
-        -----------------------------------------------------------------------
-        -- TEST 1: Simulace TICHA (Střída 50% : 101010...)
-        -- Očekáváme, že data_out se postupně ustálí na hodnotě 2048
-        -----------------------------------------------------------------------
-        report "Start simulace: TICHO (50% density)";
-        for i in 1 to 4096 loop
+      -- stredni hodnota
+        for i in 1 to 256 loop
             if (i mod 2 = 0) then send_pdm_bit('1');
             else send_pdm_bit('0');
             end if;
@@ -86,30 +81,21 @@ begin
         
         wait for 1 us;
 
-        -----------------------------------------------------------------------
-        -- TEST 2: Simulace MAXIMÁLNÍHO TLAKU (Samé 1)
-        -- Očekáváme, že data_out poroste až k hodnotě 4096
-        -----------------------------------------------------------------------
-        report "Start simulace: MAX (100% density)";
-        for i in 1 to 4096 loop
+        -- maximalni tlak 
+        for i in 1 to 256 loop
             send_pdm_bit('1');
         end loop;
 
         wait for 1 us;
 
-        -----------------------------------------------------------------------
-        -- TEST 3: Simulace MAXIMÁLNÍHO PODTLAKU (Samé 0)
-        -- Očekáváme, že data_out klesne až k hodnotě 0
-        -----------------------------------------------------------------------
-        report "Start simulace: MIN (0% density)";
-        for i in 1 to 4096 loop
+        -- nuly 
+        for i in 1 to 128 loop
             send_pdm_bit('0');
         end loop;
 
         wait for 10 us;
 
         -- Ukončení simulace
-        report "Simulace dokoncena v poradku.";
         TbSimEnded <= '1';
         wait;
     end process;

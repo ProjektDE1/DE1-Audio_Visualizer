@@ -9,6 +9,7 @@ entity audio_meter_top is
         m_clk       : out STD_LOGIC;
         m_lr_sel    : out STD_LOGIC;
         led_out     : out STD_LOGIC_VECTOR(15 downto 0);
+        
         -- 7-segmentovy displej
         seg         : out STD_LOGIC_VECTOR(6 downto 0);
         an          : out STD_LOGIC_VECTOR(7 downto 0);
@@ -32,7 +33,7 @@ architecture Behavioral of audio_meter_top is
     end component;
 
     component acumulator is
-        generic (G_N : positive := 4096);
+        generic (G_N : positive := 128);
         port (
             clk        : in  STD_LOGIC;
             rst        : in  STD_LOGIC;
@@ -92,7 +93,7 @@ begin
         );
 
     inst_akumulator : acumulator
-        generic map (G_N => 4096)
+        generic map (G_N => 128)
         port map (
             clk        => clk,
             rst        => rst,

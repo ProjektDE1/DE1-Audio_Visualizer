@@ -31,7 +31,7 @@ architecture tb of tb_pdm_interface is
     signal data     : std_logic;
     signal clk_en   : std_logic;
 
-    constant TbPeriod : time := 10 ns; -- ***EDIT*** Put right period here
+    constant TbPeriod : time := 10 ns; 
     signal TbClock : std_logic := '0';
     signal TbSimEnded : std_logic := '0';
 
@@ -53,23 +53,40 @@ begin
 
     -- Clock generation
     TbClock <= not TbClock after TbPeriod/2 when TbSimEnded /= '1' else '0';
-
-    -- ***EDIT*** Check that clk is really your main clock signal
     clk <= TbClock;
 
     stimuli : process
+    
+    -- microphone simulation procedure
+    procedure send_mic_data (bit_val : std_logic) is
     begin
-        -- ***EDIT*** Adapt initialization as needed
+
+        wait until falling_edge(m_clk); 
+        wait for 20 ns; 
+        m_data <= bit_val; 
+        
+    end procedure;
+
+    begin
+
         m_data <= '0';
 
         -- Reset generation
-        -- ***EDIT*** Check that rst is really your reset signal
         rst <= '1';
         wait for 100 ns;
         rst <= '0';
         wait for 100 ns;
 
-        -- ***EDIT*** Add stimuli here
+        send_mic_data('1'); 
+        send_mic_data('0'); 
+        send_mic_data('1'); 
+        send_mic_data('0'); 
+        send_mic_data('1'); 
+        send_mic_data('1'); 
+        send_mic_data('0'); 
+        send_mic_data('1'); 
+        send_mic_data('0'); 
+
         wait for 10 us;
 
         -- Stop the clock and hence terminate the simulation
