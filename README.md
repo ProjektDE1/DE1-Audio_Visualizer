@@ -14,7 +14,7 @@ The design is implemented in VHDL and consists of five components: [a clock divi
 
 ## Top Diagram
 
-![Block Diagram](topdiagram.png)
+![Block Diagram](source%20files/audio-visualiser%20(1).png)
 
 ## Inputs
 
