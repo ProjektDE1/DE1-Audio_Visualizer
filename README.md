@@ -42,7 +42,7 @@ The measured sound level values are output to the following peripherals:
 * **Decimal point (DP)** - pin `H15`, permanently off.
 
 **LED bargraph:**
-* **`LD0–LD15`** - Visual indication of the sound level. Each LED represents ~6 dB. No LEDs are lit during silence, all LEDs are lit at maximum volume.
+* **`LD0–LD15`** - Visual indication of the sound level. No LEDs are lit during silence, all LEDs are lit at maximum volume.
 
 **Microphone control outputs:**
 * **`mic_clk_out`** - PDM clock signal for the ADMP421 microphone (~3.03 MHz), pin J5.
