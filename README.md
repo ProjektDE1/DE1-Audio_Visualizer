@@ -34,11 +34,12 @@ The system is controlled using the integrated buttons and clock signal on the Ne
 The measured sound level values are output to the following peripherals:
 
 **Seven-segment display:**
-* **Segment 0 (DISP 1)** - Displays the units digit of the sound level value in dB.
-* **Segment 1 (DISP 2)** - Displays the tens digit of the sound level value in dB.
-* **Segment 2 (DISP 3)** - Displays the hundreds digit of the sound level value in dB.
-* **Segment 2 (DISP 4)** - Displays the character `b` 
-* **Segment 3 (DISP 5)** - Displays the character `d` 
+* **Segment 0 (DISP 1)** - Displays the units digit of the sound level value in dB, pin `J17`.
+* **Segment 1 (DISP 2)** - Displays the tens digit of the sound level value in dB, pin `J18`.
+* **Segment 2 (DISP 3)** - Displays the hundreds digit of the sound level value in dB, pin `T9`.
+* **Segment 2 (DISP 4)** - Displays the character `b`, pin `J14`.
+* **Segment 3 (DISP 5)** - Displays the character `d`, pin `P14`.
+* **Decimal point (DP)** - pin `H15`, permanently off.
 
 **LED bargraph:**
 * **`LD0–LD15`** - Visual indication of the sound level. Each LED represents ~6 dB. No LEDs are lit during silence, all LEDs are lit at maximum volume.
