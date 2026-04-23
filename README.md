@@ -2,8 +2,8 @@
 
 # Team Members:
 
-- Matouš Huczala -> discord: matyskovo 
-- Jerguš Gecík -> discord: joxwy
+- Matouš Huczala 
+- Jerguš Gecík 
 - Samuel Pažítka
 - Pavel Uher
 
@@ -14,7 +14,7 @@ The design is implemented in VHDL and consists of five components: [a clock divi
 
 ## Top Diagram
 
-![Block Diagram](topdiagram.png)
+![Block Diagram](source%20files/audio-visualiser%20(1).png)
 
 ## Inputs
 
@@ -34,14 +34,15 @@ The system is controlled using the integrated buttons and clock signal on the Ne
 The measured sound level values are output to the following peripherals:
 
 **Seven-segment display:**
-* **Segment 0 (DISP 0)** - Displays the units digit of the sound level value in dB.
-* **Segment 1 (DISP 1)** - Displays the tens digit of the sound level value in dB.
-* **Segment 2 (DISP 2)** - Displays the character `b` 
-* **Segment 3 (DISP 3)** - Displays the character `d` 
+* **Segment 0 (DISP 1)** - Displays the units digit of the sound level value in dB.
+* **Segment 1 (DISP 2)** - Displays the tens digit of the sound level value in dB.
+* **Segment 2 (DISP 3)** - Displays the hundreds digit of the sound level value in dB.
+* **Segment 2 (DISP 4)** - Displays the character `b` 
+* **Segment 3 (DISP 5)** - Displays the character `d` 
 
 **LED bargraph:**
 * **`LD0–LD15`** - Visual indication of the sound level. Each LED represents ~6 dB. No LEDs are lit during silence, all LEDs are lit at maximum volume.
 
 **Microphone control outputs:**
-* **`mic_clk_out`** - PDM clock signal for the ADMP421 microphone (~1.19 MHz), pin J5.
+* **`mic_clk_out`** - PDM clock signal for the ADMP421 microphone (~3.03 MHz), pin J5.
 * **`mic_lr_sel`** - Microphone channel select, permanently set to `'0'` (left channel), pin F5.
