@@ -1,8 +1,3 @@
--- Testbench automatically generated online
--- at https://vhdl.lapinoo.net
--- Generation date : Thu, 16 Apr 2026 14:06:16 GMT
--- Request id : cfwk-fed377c2-69e0ecd8a5df6
-
 library ieee;
 use ieee.std_logic_1164.all;
 
@@ -12,6 +7,7 @@ end tb_led_driver;
 architecture tb of tb_led_driver is
 
     component led_driver
+        generic (G_REFRESH : positive := 100_000);
         port (clk        : in std_logic;
               rst        : in std_logic;
               data_in    : in std_logic_vector (6 downto 0);
@@ -31,13 +27,16 @@ architecture tb of tb_led_driver is
     signal an         : std_logic_vector (7 downto 0);
     signal dp         : std_logic;
 
-    constant TbPeriod : time := 10 ns; -- ***EDIT*** Put right period here
+    constant TbPeriod : time := 10 ns;
     signal TbClock : std_logic := '0';
     signal TbSimEnded : std_logic := '0';
 
 begin
 
     dut : led_driver
+    generic map (
+        G_REFRESH => 16
+    )
     port map (clk        => clk,
               rst        => rst,
               data_in    => data_in,
@@ -47,58 +46,46 @@ begin
               an         => an,
               dp         => dp);
 
-    -- Clock generation
     TbClock <= not TbClock after TbPeriod/2 when TbSimEnded /= '1' else '0';
-
-    -- ***EDIT*** Check that clk is really your main clock signal
     clk <= TbClock;
 
     stimuli : process
     begin
-        -- ***EDIT*** Adapt initialization as needed
         data_in <= (others => '0');
         data_valid <= '0';
 
-        -- rst
         rst <= '1';
         wait for 100 ns;
         rst <= '0';
-        wait for 20 ns; -- Wait a bit after reset
+        wait for 20 ns;
 
         -- male
         data_in    <= "1000010";
-        --data_in    <= "0000001";
         data_valid <= '1';
-        wait for TbPeriod;     -- Hold for one clock cycle
-        data_valid <= '0';     -- De-assert valid
-        wait for 4 * TbPeriod; -- Gap between data
+        wait for TbPeriod;
+        data_valid <= '0';
+        wait for 4 * TbPeriod;
 
         -- stredne cca
-        data_in      <= "1011010";
-        --data_in    <= "0101010";
+        data_in    <= "1011010";
         data_valid <= '1';
         wait for TbPeriod;
         data_valid <= '0';
         wait for 4 * TbPeriod;
 
         -- MAX
-        data_in      <= "1111000";
-        --data_in    <= "1111111";
+        data_in    <= "1111000";
         data_valid <= '1';
         wait for TbPeriod;
         data_valid <= '0';
 
-        
-        wait for 100 * TbPeriod;
+        wait for 500 * TbPeriod;
 
-        
         TbSimEnded <= '1';
         wait;
     end process;
 
 end tb;
-
--- Configuration block below is required by some simulators. Usually no need to edit.
 
 configuration cfg_tb_led_driver of tb_led_driver is
     for tb
