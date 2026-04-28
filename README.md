@@ -64,5 +64,5 @@ Showcase of the simulations for each individual module used in the project.
 *LUT converting the accumulator output to a calibrated dB value. The `db_out` signal updates on each `data_valid` pulse.*
 
 ### LED Driver
-![led_driver simulation](testbench/screenshots/led_driver.png)
+
 *Three input samples (66, 90 and 120 dB) are applied via `data_valid`, with `led_out` stepping from `0x0000` to `0xffff` confirming correct bargraph behaviour. The `an` and `seg` signals cycle through all 8 display digits, verifying the 7-segment multiplexer is working correctly.*
