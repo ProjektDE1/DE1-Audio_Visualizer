@@ -47,3 +47,22 @@ The measured sound level values are output to the following peripherals:
 **Microphone control outputs:**
 * **`mic_clk_out`** - PDM clock signal for the ADMP421 microphone (~3.03 MHz), pin J5.
 * **`mic_lr_sel`** - Microphone channel select, permanently set to `'0'` (left channel), pin F5.
+
+* ## Simulation Results
+Showcase of the simulations for each individual module used in the project.
+
+### PDM Interface
+![pdm_interface simulation](testbench/screenshots/pdm_inteface.png)
+*Simulation showing the generated PDM clock (`m_clk`) toggling at ~3.03 MHz.
+
+### Accumulator
+![accumulator simulation](testbench/screenshots/acumulator.png)
+*The accumulator counting PDM ones over a window of 4096 samples, asserting `data_valid` and outputting the 13bit result at the end of each window.*
+
+### Signal Processor
+![signal_processor simulation](testbench/screenshots/signal_processor2.png)
+*LUT converting the accumulator output to a calibrated dB value. The `db_out` signal updates on each `data_valid` pulse.*
+
+### LED Driver
+![led_driver simulation](testbench/screenshots/led_driver.png)
+*Three input samples (66, 90 and 120 dB) are applied via `data_valid`, with `led_out` stepping from `0x0000` to `0xffff` confirming correct bargraph behaviour. The `an` and `seg` signals cycle through all 8 display digits, verifying the 7-segment multiplexer is working correctly.*
