@@ -45,29 +45,44 @@ The measured sound level values are output to the following peripherals:
 * **`LD0–LD15`** - Visual indication of the sound level. No LEDs are lit during silence, all LEDs are lit at maximum volume.
 
 **Microphone control outputs:**
-* **`mic_clk_out`** - PDM clock signal for the ADMP421 microphone (~3.03 MHz), pin J5.
-* **`mic_lr_sel`** - Microphone channel select, permanently set to `'0'` (left channel), pin F5.
+* **`mic_clk_out`** - PDM clock signal for the ADMP421 microphone (~3.03 MHz), pin `J5`.
+* **`mic_lr_sel`** - Microphone channel select, permanently set to `'0'` (left channel), pin `F5`.
 
 * ## Simulation Results
 Showcase of the simulations for each individual module used in the project.
 
 ### PDM Interface
+*PDM interface handles the onboard MEMS microphone. Generates a ~3.03 MHz signal using the internal system clock*
 ![pdm_interface simulation](testbench/screenshots/pdm_inteface.png)
-*Simulation showing the generated PDM clock (`m_clk`) toggling at ~3.03 MHz.
+*Simulation showing the generated PDM clock (`m_clk`) toggling at ~3.03 MHz.*
 
 ### Accumulator
+*Accumulator counts incoming PDM signal over a fixed sample rate of 4096. After each sample window it asserts data validity through `data_valid` and outputs a 13-bit signal.*
 ![accumulator simulation](testbench/screenshots/acumulator.png)
 *The accumulator counting PDM ones over a window of 4096 samples, asserting `data_valid` and outputting the 13bit result at the end of each window.*
 
 ### Signal Processor
+*Signal proccesor recieves the 13-bit output and converts it into a dB value using a calibrated LUT table. It outputs a 7-bit signal with another `dB_valid` validity verifier.*
 ![signal_processor simulation](testbench/screenshots/signal_processor2.png)
 *LUT converting the accumulator output to a calibrated dB value. The `db_out` signal updates on each `data_valid` pulse.*
 
 ### LED Driver
+*Led driver recieves the dB value from Signal proccesor, it then maps the value on the 16bit LED bargraph and also drives the multiplexor 7-segment display showing the measured value as a 3-bit dB reading.*
 ![led_driver simulation](testbench/screenshots/led_driver.png)
 *Three input samples (66, 90 and 120 dB) are applied via `data_valid`, with `led_out` stepping from `0x0000` to `0xffff` which confirms correct behaviour. The `an` and `seg` signals cycle through all 8 display digits.*
 
+## Resource Utilization
+
+| Resource | Used | Available | Utilization |
+|----------|------|-----------|-------------|
+| LUT      | ???  | 32600     | ???%        |
+| FF       | ???  | 65200     | ???%        |
+| BRAM     | ???  | 75        | ???%        |
+| IO       | ???  | 210       | ???%        |
+
 ## Media
+- **[A3 poster](<https://canva.link/xmjbbbmcxwonoue>)**
+- **[Video demonstration](<https://canva.link/xmjbbbmcxwonoue>)**
 
 ## References and Tools
 ### Tools
