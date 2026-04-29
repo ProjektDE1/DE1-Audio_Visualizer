@@ -1,3 +1,14 @@
+-- LED_DRIVER
+-- receives the calibrated dB value and gives both outputs
+-- led_out is updated and seg/an are valid when data_valid = 1
+
+-- output 1: LED bargraph
+-- maps the dB value to 16 LEDs
+
+-- output 2: 7-segment display
+-- displays the dB value as a 3-digit number
+-- uses a multiplexor driver with 8 digits
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
@@ -19,7 +30,7 @@ entity led_driver is
 end led_driver;
 
 architecture Behavioral of led_driver is
-
+-- encode_seg: converts a 4-bit digit code to a 7-segment display pattern, active-low
     function encode_seg(d : integer range 0 to 15) return STD_LOGIC_VECTOR is
     begin
         case d is
@@ -49,10 +60,8 @@ architecture Behavioral of led_driver is
 
 begin
 
-    -- =========================================================================
-    -- Proces 1: LED bargraf + 7-seg digits pri data_valid
-    -- Stupnica: 54-120 dB rovnomerne cez 16 LED, krok ~4 dB
-    -- =========================================================================
+
+ -- process 1: LED bargraph and 7-segment display
     process(clk)
         variable val      : integer range 0 to 127;
         variable hundreds : integer range 0 to 1;
@@ -68,47 +77,45 @@ begin
             elsif data_valid = '1' then
                 val := to_integer(unsigned(data_in));
 
-                -- LED bargraf: stupnica 54-120 dB, krok ~4 dB na LED
+                -- LED bargraph: 54-85 dB
                 if val > 54  then led_reg(0)  <= '1'; else led_reg(0)  <= '0'; end if;
-                if val > 58  then led_reg(1)  <= '1'; else led_reg(1)  <= '0'; end if;
-                if val > 62  then led_reg(2)  <= '1'; else led_reg(2)  <= '0'; end if;
-                if val > 66  then led_reg(3)  <= '1'; else led_reg(3)  <= '0'; end if;
-                if val > 70  then led_reg(4)  <= '1'; else led_reg(4)  <= '0'; end if;
-                if val > 75  then led_reg(5)  <= '1'; else led_reg(5)  <= '0'; end if;
-                if val > 79  then led_reg(6)  <= '1'; else led_reg(6)  <= '0'; end if;
-                if val > 83  then led_reg(7)  <= '1'; else led_reg(7)  <= '0'; end if;
-                if val > 87  then led_reg(8)  <= '1'; else led_reg(8)  <= '0'; end if;
-                if val > 91  then led_reg(9)  <= '1'; else led_reg(9)  <= '0'; end if;
-                if val > 95  then led_reg(10) <= '1'; else led_reg(10) <= '0'; end if;
-                if val > 99  then led_reg(11) <= '1'; else led_reg(11) <= '0'; end if;
-                if val > 104 then led_reg(12) <= '1'; else led_reg(12) <= '0'; end if;
-                if val > 108 then led_reg(13) <= '1'; else led_reg(13) <= '0'; end if;
-                if val > 112 then led_reg(14) <= '1'; else led_reg(14) <= '0'; end if;
-                if val > 116 then led_reg(15) <= '1'; else led_reg(15) <= '0'; end if;
+                if val > 56  then led_reg(1)  <= '1'; else led_reg(1)  <= '0'; end if;
+                if val > 58  then led_reg(2)  <= '1'; else led_reg(2)  <= '0'; end if;
+                if val > 60  then led_reg(3)  <= '1'; else led_reg(3)  <= '0'; end if;
+                if val > 62  then led_reg(4)  <= '1'; else led_reg(4)  <= '0'; end if;
+                if val > 64  then led_reg(5)  <= '1'; else led_reg(5)  <= '0'; end if;
+                if val > 66  then led_reg(6)  <= '1'; else led_reg(6)  <= '0'; end if;
+                if val > 68  then led_reg(7)  <= '1'; else led_reg(7)  <= '0'; end if;
+                if val > 70  then led_reg(8)  <= '1'; else led_reg(8)  <= '0'; end if;
+                if val > 72  then led_reg(9)  <= '1'; else led_reg(9)  <= '0'; end if;
+                if val > 74  then led_reg(10) <= '1'; else led_reg(10) <= '0'; end if;
+                if val > 76  then led_reg(11) <= '1'; else led_reg(11) <= '0'; end if;
+                if val > 78 then led_reg(12) <= '1'; else led_reg(12) <= '0'; end if;
+                if val > 80 then led_reg(13) <= '1'; else led_reg(13) <= '0'; end if;
+                if val > 82 then led_reg(14) <= '1'; else led_reg(14) <= '0'; end if;
+                if val > 85 then led_reg(15) <= '1'; else led_reg(15) <= '0'; end if;
 
-                
                 tmp      := val;
-                hundreds := tmp / 100;
+                hundreds := tmp / 100;  -- extract hundreds digit (0 or 1)
                 tmp      := tmp mod 100;
-                tens_v   := tmp / 10;
-                units_v  := tmp mod 10;
+                tens_v   := tmp / 10;   -- extract tens digit
+                units_v  := tmp mod 10; -- extract units digit
 
               
                 digits(7) <= 15;         -- blank
                 digits(6) <= 15;         -- blank
                 digits(5) <= 10;         -- 'd'
                 digits(4) <= 11;         -- 'b'
-                digits(3) <= hundreds;   -- stovky 
-                digits(2) <= tens_v;     -- desiatky
-                digits(1) <= units_v;    -- jednotky
+                digits(3) <= hundreds;   -- hundreds 
+                digits(2) <= tens_v;     -- tens
+                digits(1) <= units_v;    -- units
                 digits(0) <= 15;         -- blank
             end if;
         end if;
     end process;
 
-    -- =========================================================================
-    -- Proces 2: refresh counter
-    -- =========================================================================
+
+-- refresh counter: cycles digit_sel through 0-7 to multiplex the 7-segment display
     process(clk)
     begin
         if rising_edge(clk) then
@@ -130,12 +137,10 @@ begin
         end if;
     end process;
 
-    -- =========================================================================
-    -- Kombinacna logika: anody a segmenty
-    -- =========================================================================
+-- combination process: drives an and seg outputs based on current digit_sel, active-low configuration
     process(digit_sel, digits)
     begin
-        an <= "11111111";
+        an <= "11111111"; -- default: all digits off
         case digit_sel is
             when 0 => an <= "11111110";
             when 1 => an <= "11111101";
@@ -147,7 +152,7 @@ begin
             when 7 => an <= "01111111";
             when others => an <= "11111111";
         end case;
-        seg <= encode_seg(digits(digit_sel));
+        seg <= encode_seg(digits(digit_sel)); -- outputs segment pattern for active digit
     end process;
 
     dp      <= '1';
