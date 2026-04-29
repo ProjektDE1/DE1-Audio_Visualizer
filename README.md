@@ -65,7 +65,9 @@ Showcase of the simulations for each individual module used in the project.
 
 ### LED Driver
 ![led_driver simulation](testbench/screenshots/led_driver.png)
-*Three input samples (66, 90 and 120 dB) are applied via `data_valid`, with `led_out` stepping from `0x0000` to `0xffff` confirming correct bargraph behaviour. The `an` and `seg` signals cycle through all 8 display digits.*
+*Three input samples (66, 90 and 120 dB) are applied via `data_valid`, with `led_out` stepping from `0x0000` to `0xffff` which confirms correct behaviour. The `an` and `seg` signals cycle through all 8 display digits.*
+
+## Media
 
 ## References and Tools
 ### Tools
@@ -77,4 +79,6 @@ Showcase of the simulations for each individual module used in the project.
  ### References
 - **[IEEE Standard 1076-2008 - VHDL Language Reference Manual](<https://0x04.net/~mwk/vstd/ieee-1076-2008.pdf>)** 
 - **[Nexys A7 Digilent Reference](<https://digilent.com/reference/programmable-logic/nexys-a7/start>)** 
-- **[Online VHDL Testbench Template Generator](<https://vhdl.lapinoo.net>)** 
+- **[Online VHDL Testbench Template Generator](<https://vhdl.lapinoo.net>)**
+- **[Reference Tone Generator](<https://www.szynalski.com/tone-generator>)** 
+
