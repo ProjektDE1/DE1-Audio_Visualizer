@@ -27,7 +27,7 @@ The system is controlled using the integrated buttons and clock signal on the Ne
 * **`rst` (`BTNC`)** - Resets the system to its default state, pin N17.
 
 **Microphone:**
-* **`mic_data_in`** - PDM data input from the onboard ADMP421 microphone, pin H5.
+* **`m_data`** - PDM data input from the onboard ADMP421 microphone, pin H5.
 
 # Outputs
 
@@ -45,8 +45,8 @@ The measured sound level values are output to the following peripherals:
 * **`LD0–LD15`** - Visual indication of the sound level. No LEDs are lit during silence, all LEDs are lit at maximum volume.
 
 **Microphone control outputs:**
-* **`mic_clk_out`** - PDM clock signal for the ADMP421 microphone (~3.03 MHz), pin `J5`.
-* **`mic_lr_sel`** - Microphone channel select, permanently set to `'0'` (left channel), pin `F5`.
+* **`m_clk`** - PDM clock signal for the ADMP421 microphone (~3.03 MHz), pin `J5`.
+* **`m_lr_sel`** - Microphone channel select, permanently set to `'0'` (left channel), pin `F5`.
 
 # Simulation Results
 Showcase of the simulations for each individual module used in the project.
