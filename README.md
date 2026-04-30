@@ -21,13 +21,13 @@ The design consists of four components: [pdm_interface](source%20files/pdm_inter
 The system is controlled using the integrated buttons and clock signal on the Nexys A7 board:
 
 **Clock signal:**
-* **`clk`** - System clock signal 100 MHz, pin E3.
+* **`clk`** - System clock signal 100 MHz, pin `E3`.
 
 **Buttons:**
-* **`rst` (`BTNC`)** - Resets the system to its default state, pin N17.
+* **`rst` (`BTNC`)** - Resets the system to its default state, pin `N17`.
 
 **Microphone:**
-* **`m_data`** - PDM data input from the onboard ADMP421 microphone, pin H5.
+* **`m_data`** - PDM data input from the onboard ADMP421 microphone, pin `H5`.
 
 # Outputs
 
@@ -97,4 +97,3 @@ Showcase of the simulations for each individual module used in the project.
 - **[Nexys A7 Digilent Reference](<https://digilent.com/reference/programmable-logic/nexys-a7/start>)** 
 - **[Online VHDL Testbench Template Generator](<https://vhdl.lapinoo.net>)**
 - **[Reference Tone Generator](<https://www.szynalski.com/tone-generator>)** 
-
