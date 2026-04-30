@@ -52,17 +52,17 @@ The measured sound level values are output to the following peripherals:
 Showcase of the simulations for each individual module used in the project.
 
 ## PDM Interface
-*PDM interface handles the onboard MEMS microphone. Generates a ~3.03 MHz signal using the internal system clock*
+*pdm_interface is a merger of beta components microphone and clock_divider. It divides the main clock, sends a signal with a duty cycle of 50% to the MEMS microphone and sends enable pulses of the same frequency to the accumulator*
 ![pdm_interface simulation](testbench/screenshots/pdm_inteface.png)
 *Simulation showing the generated PDM clock (`m_clk`) toggling at ~3.03 MHz.*
 
 ## Accumulator
-*Accumulator counts incoming PDM signal over a fixed sample rate of 4096. After each sample window it asserts data validity through `data_valid` and outputs a 13-bit signal.*
+*Accumulator calculates the PDM signal from `pdm_interface`. It is implemented as a 128-bit shift register. With each enable signal it sends its new value to the `signal_processor` component, it serves as the first averaging low-pass filter. According to the sampling theorem, our implementation is capable of processing frequencies up to approximately 12kHz*
 ![accumulator simulation](testbench/screenshots/acumulator.png)
-*The accumulator counting PDM ones over a window of 4096 samples, asserting `data_valid` and outputting the 13bit result at the end of each window.*
+*The accumulator counts the incoming bits from the `pdm_interface` and with each enable signal sets `data_valid` and sends data out*
 
 ## Signal Processor
-*Signal proccesor recieves the 13-bit output and converts it into a dB value using a calibrated LUT table. It outputs a 7-bit signal with another `dB_valid` validity verifier.*
+*It receives data from the `accumulator`, performs its absolute value and, according to the new implementation, calculates the average value of this signal. The averaging window is 173ms long, which relatively corresponds to the standard for SPL FAST, which is 125ms. The calculated value is compared with the values ​​in the LUT and sent to the component output as a value in decibels. The component also performs calibration of the displayed level.*
 ![signal_processor simulation](testbench/screenshots/signal_processor2.png)
 *LUT converting the accumulator output to a calibrated dB value. The `db_out` signal updates on each `data_valid` pulse.*
 
