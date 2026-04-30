@@ -93,7 +93,7 @@ Showcase of the simulations for each individual module used in the project.
 
 # Media
 - **[A3 poster](<https://canva.link/xmjbbbmcxwonoue>)**
-- **[Video demonstration](<https://canva.link/xmjbbbmcxwonoue>)**
+- **[Video demonstration](<https://youtu.be/hiaprKABy_M>)**
 
 # References and Tools
 ## Tools
