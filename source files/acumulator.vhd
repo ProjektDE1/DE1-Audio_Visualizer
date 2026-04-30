@@ -1,5 +1,5 @@
 -- vcd=result.vcd
--- accumulator rewrite for working with a moving average on a 128bit shift register
+-- accumulator rewrite for working with a moving average on a 128bits shift register
 
 library IEEE; 
 use IEEE.STD_LOGIC_1164.ALL;       

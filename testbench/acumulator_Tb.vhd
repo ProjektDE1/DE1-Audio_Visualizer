@@ -2,6 +2,7 @@
 -- at https://vhdl.lapinoo.net
 -- Generation date : Sun, 12 Apr 2026 13:11:53 GMT
 -- Request id : cfwk-fed377c2-69db9a1981080
+-- stimuli written by google gemini
 
 library ieee;
 use ieee.std_logic_1164.all;
